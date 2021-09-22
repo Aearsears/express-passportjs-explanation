@@ -8,8 +8,6 @@ const passport_local_1 = __importDefault(require("passport-local"));
 const cred_json_1 = __importDefault(require("../auth/cred.json"));
 const LocalStrategy = passport_local_1.default.Strategy;
 passport_1.default.use('login', new LocalStrategy({
-    usernameField: 'username',
-    passwordField: 'password',
     passReqToCallback: true
 }, (req, username, password, done) => {
     if (username === cred_json_1.default.account.username &&
@@ -30,11 +28,13 @@ passport_1.default.use('login', new LocalStrategy({
 passport_1.default.serializeUser((req, user, done) => {
     // could use process.nexttick to make asynchronous
     // attaching the entire user object to req.sessions
+    console.log('Passport serialize user called, user object attached to session.');
     done(null, user);
 });
 // on subsequent requests to authorization needed pages, passport will call deserializeuser to obtain more information from the store and then populate req.session with that information
 passport_1.default.deserializeUser((id, done) => {
     // if need more information on the user will assign to req.user here. in prod you would search store for user's details
+    console.log('Passport deserialize user called, user object attached to session with more details.');
     const user = {
         id: cred_json_1.default.account.id,
         username: cred_json_1.default.account.username,

@@ -7,8 +7,6 @@ passport.use(
     'login',
     new LocalStrategy(
         {
-            usernameField: 'username',
-            passwordField: 'password',
             passReqToCallback: true
         },
         (req, username, password, done) => {
@@ -34,12 +32,18 @@ passport.use(
 passport.serializeUser<any, any>((req, user, done) => {
     // could use process.nexttick to make asynchronous
     // attaching the entire user object to req.sessions
+    console.log(
+        'Passport serialize user called, user object attached to session.'
+    );
     done(null, user);
 });
 
 // on subsequent requests to authorization needed pages, passport will call deserializeuser to obtain more information from the store and then populate req.session with that information
 passport.deserializeUser((id, done) => {
     // if need more information on the user will assign to req.user here. in prod you would search store for user's details
+    console.log(
+        'Passport deserialize user called, user object attached to session with more details.'
+    );
     const user = {
         id: cred.account.id,
         username: cred.account.username,

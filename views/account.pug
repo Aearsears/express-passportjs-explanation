@@ -7,6 +7,11 @@ html(lang="en")
         title My Account
     body
         h1="My Account"
-        h1 = user
-        h1 = username 
-        h1 = nickname 
+        h1= user
+        h1= username 
+        h1= nickname 
+        a(href="/")="Home Page"
+        div
+            form(method="post" action="/logout")
+                table 
+                    input(type="submit" value="Logout")

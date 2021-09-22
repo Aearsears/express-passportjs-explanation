@@ -8,9 +8,17 @@ const express_session_1 = __importDefault(require("express-session"));
 const session_file_store_1 = __importDefault(require("session-file-store"));
 const parseurl_1 = __importDefault(require("parseurl"));
 const passport_1 = __importDefault(require("passport"));
+require("./passport-auth");
 const path_1 = __importDefault(require("path"));
 const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
+// declare module 'express' {
+//     export interface Request {
+//         // user: {
+//         //     id: string;
+//         // };
+//     }
+// }
 const app = (0, express_1.default)();
 app.set('views', './views');
 app.set('view engine', 'pug');
@@ -58,6 +66,7 @@ app.get('/', (req, resp) => {
     }
     console.log(req.session);
     console.log(req.session.id);
+    console.log(req === null || req === void 0 ? void 0 : req.user);
     resp.render('index', {
         title: 'Homepage',
         message: 'Welcome!',
@@ -67,7 +76,9 @@ app.get('/', (req, resp) => {
 app.get('/account', (req, resp) => {
     if (req.isAuthenticated()) {
         resp.render('account', {
-            user: req.user
+            user: req.user.id,
+            username: req.user.username,
+            nickname: req.user.nickname
         });
     }
     else {
@@ -80,17 +91,34 @@ app.get('/login', (req, resp) => {
     resp.render('login');
 });
 app.post('/login', (req, resp, next) => {
+    console.log('in login post method');
     passport_1.default.authenticate('login', (err, user, info) => {
+        console.log('in login post method, passport');
         if (err) {
             return next(err);
         }
         if (!user) {
-            resp.status(401).send(info.message);
+            return resp.status(401).render('login', { errMssg: info.message });
         }
         else {
-            resp.status(200);
-            return resp.redirect('/');
+            req.logIn(user, (err) => {
+                if (err) {
+                    return next(err);
+                }
+                resp.status(200);
+                return resp.redirect('/account');
+            });
         }
+    })(req, resp, next);
+});
+app.post('/logout', (req, resp, next) => {
+    console.log('in logout post method');
+    req.session.destroy((err) => {
+        if (err) {
+            return next(err);
+        }
+        resp.status(200);
+        return resp.redirect('/');
     });
 });
 app.listen(4000, () => {

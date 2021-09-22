@@ -3,7 +3,8 @@ import session from 'express-session';
 import FileStore from 'session-file-store';
 import parseurl from 'parseurl';
 import passport from 'passport';
-import * as passportConfig from './passport-auth';
+import { IVerifyOptions } from 'passport-local';
+import './passport-auth';
 import path from 'path';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -65,6 +66,7 @@ app.get('/', (req: Request, resp: Response) => {
     }
     console.log(req.session);
     console.log(req.session.id);
+    console.log(req?.user);
     resp.render('index', {
         title: 'Homepage',
         message: 'Welcome!',
@@ -74,7 +76,9 @@ app.get('/', (req: Request, resp: Response) => {
 app.get('/account', (req: Request, resp: Response) => {
     if (req.isAuthenticated()) {
         resp.render('account', {
-            user: req.user
+            user: req.user.id,
+            username: req.user.username,
+            nickname: req.user.nickname
         });
     } else {
         resp.redirect('/login');
@@ -87,16 +91,34 @@ app.get('/login', (req: Request, resp: Response) => {
 });
 
 app.post('/login', (req: Request, resp: Response, next: NextFunction) => {
-    passport.authenticate('login', (err, user, info) => {
+    console.log('in login post method');
+    passport.authenticate('login', (err: Error, user, info: IVerifyOptions) => {
+        console.log('in login post method, passport');
         if (err) {
             return next(err);
         }
         if (!user) {
-            resp.status(401).send(info.message);
+            return resp.status(401).render('login', { errMssg: info.message });
         } else {
-            resp.status(200);
-            return resp.redirect('/');
+            req.logIn(user, (err: Error) => {
+                if (err) {
+                    return next(err);
+                }
+                resp.status(200);
+                return resp.redirect('/account');
+            });
         }
+    })(req, resp, next);
+});
+
+app.post('/logout', (req: Request, resp: Response, next: NextFunction) => {
+    console.log('in logout post method');
+    req.session.destroy((err: Error) => {
+        if (err) {
+            return next(err);
+        }
+        resp.status(200);
+        return resp.redirect('/');
     });
 });
 

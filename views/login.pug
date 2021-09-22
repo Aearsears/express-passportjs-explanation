@@ -6,7 +6,8 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Login 
     body
-        form(method="post" action="/")
+        a(href="/")="Home page" 
+        form(method="post" action="/login")
             table 
                 tr
                     td Username 
@@ -17,6 +18,6 @@ html(lang="en")
                     td 
                         input(type="password" name="password")
                 tr 
-                    td
+                    td=errMssg
                     td
                         input(type="submit" value="Login")
