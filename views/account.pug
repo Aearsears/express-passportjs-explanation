@@ -1,17 +1,20 @@
 doctype html
 html(lang="en")
     head
-        meta(charset="UTF-8")
-        meta(http-equiv="X-UA-Compatible", content="IE=edge")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        include headerdetails.pug
+        include styles.pug
         title My Account
     body
-        h1="My Account"
-        h1= user
-        h1= username 
-        h1= nickname 
-        a(href="/")="Home Page"
-        div
-            form(method="post" action="/logout")
-                table 
-                    input(type="submit" value="Logout")
+        div(class='grid-container') 
+            div(class='grid-item-style div1') 
+                h3="My Account"
+                h3 User ID: #{user}
+                h3 Username: #{username} 
+                h3 Display name: #{nickname}
+                h5= nofviews 
+                a(href="/")="Home Page"
+                div
+                    form(method="post" action="/logout")
+                        table 
+                            input(type="submit" value="Logout")
+            include infodivs.pug

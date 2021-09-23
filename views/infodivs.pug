@@ -1,0 +1,17 @@
+div(class='grid-item-style div2') 
+    h3="Session Object (stored in store)"
+    p Current session id: #{sessionid}
+    pre(class='myClass') #{JSON.stringify(sessioninfo)}
+div(class='grid-item-style div3') 
+    h3="Database files"
+    ul
+        if files
+            each val in files 
+                li(class='textsize')= val
+div(class='grid-item-style div4') 
+    h3="Flow"
+    p User is assigned a session object upon visiting the site. The session is stored in the database and only the session id is stored in the user's browser cookies.
+    p On login, the passportjs middleware will check the login details with the database. If they match, the session object will have a passport.user object added. This is what happens in the passport.serializeUser function.
+    p Now, user is authenticated and can access pages such as their account page. All subsequent requests sent to the server will call passport.deserializeUser to populate passport.user with more information as defined by the designers.
+    p On logout, the session will be deleted.
+    p Have a try here with the credentials "username" and "password".

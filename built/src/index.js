@@ -12,13 +12,7 @@ require("./passport-auth");
 const path_1 = __importDefault(require("path"));
 const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
-// declare module 'express' {
-//     export interface Request {
-//         // user: {
-//         //     id: string;
-//         // };
-//     }
-// }
+const fs_1 = __importDefault(require("fs"));
 const app = (0, express_1.default)();
 app.set('views', './views');
 app.set('view engine', 'pug');
@@ -61,24 +55,62 @@ app.use((req, resp, next) => {
 app.get('/', (req, resp) => {
     var _a;
     let views;
+    let dbfiles;
     if ((_a = req.session) === null || _a === void 0 ? void 0 : _a.views) {
-        views = 'You viewed this page ' + req.session.views['/'] + ' times.';
+        views =
+            'You viewed this page ' +
+                req.session.views[req.originalUrl] +
+                ' times.';
     }
     console.log(req.session);
     console.log(req.session.id);
     console.log(req === null || req === void 0 ? void 0 : req.user);
-    resp.render('index', {
-        title: 'Homepage',
-        message: 'Welcome!',
-        nofviews: views
+    const info = req.session;
+    const id = req.session.id;
+    fs_1.default.readdir(path_1.default.join(__dirname, '/../../', 'sessions'), (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        dbfiles = data.slice();
+        resp.render('index', {
+            message: 'Welcome!',
+            nofviews: views,
+            sessioninfo: info,
+            sessionid: id,
+            files: dbfiles
+        });
     });
 });
 app.get('/account', (req, resp) => {
+    var _a;
     if (req.isAuthenticated()) {
-        resp.render('account', {
-            user: req.user.id,
-            username: req.user.username,
-            nickname: req.user.nickname
+        let views;
+        let dbfiles;
+        if ((_a = req.session) === null || _a === void 0 ? void 0 : _a.views) {
+            views =
+                'You viewed this page ' +
+                    req.session.views[req.originalUrl] +
+                    ' times.';
+        }
+        console.log(req.session);
+        console.log(req.session.id);
+        console.log(req === null || req === void 0 ? void 0 : req.user);
+        const info = req.session;
+        const id = req.session.id;
+        fs_1.default.readdir(path_1.default.join(__dirname, '/../../', 'sessions'), (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            dbfiles = data.slice();
+            resp.render('account', {
+                nofviews: views,
+                sessioninfo: info,
+                sessionid: id,
+                files: dbfiles,
+                user: req.user.id,
+                username: req.user.username,
+                nickname: req.user.nickname
+            });
         });
     }
     else {
@@ -86,9 +118,32 @@ app.get('/account', (req, resp) => {
     }
 });
 app.get('/login', (req, resp) => {
+    var _a;
+    let views;
+    let dbfiles;
+    if ((_a = req.session) === null || _a === void 0 ? void 0 : _a.views) {
+        views =
+            'You viewed this page ' +
+                req.session.views[req.originalUrl] +
+                ' times.';
+    }
     console.log(req.session);
     console.log(req.session.id);
-    resp.render('login');
+    console.log(req === null || req === void 0 ? void 0 : req.user);
+    const info = req.session;
+    const id = req.session.id;
+    fs_1.default.readdir(path_1.default.join(__dirname, '/../../', 'sessions'), (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        dbfiles = data.slice();
+        resp.render('login', {
+            nofviews: views,
+            sessioninfo: info,
+            sessionid: id,
+            files: dbfiles
+        });
+    });
 });
 app.post('/login', (req, resp, next) => {
     console.log('in login post method');
@@ -122,5 +177,5 @@ app.post('/logout', (req, resp, next) => {
     });
 });
 app.listen(4000, () => {
-    console.log('live');
+    console.log('Live on port 4000.');
 });

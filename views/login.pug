@@ -1,23 +1,26 @@
 doctype html
 html(lang="en")
     head
-        meta(charset="UTF-8")
-        meta(http-equiv="X-UA-Compatible", content="IE=edge")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        include headerdetails.pug
+        include styles.pug
         title Login 
     body
-        a(href="/")="Home page" 
-        form(method="post" action="/login")
-            table 
-                tr
-                    td Username 
-                    td 
-                        input(type="text" name="username")
-                tr 
-                    td Password 
-                    td 
-                        input(type="password" name="password")
-                tr 
-                    td=errMssg
-                    td
-                        input(type="submit" value="Login")
+        div(class='grid-container') 
+            div(class='grid-item-style div1') 
+                a(href="/")="Home page"
+                h5= nofviews
+                form(method="post" action="/login")
+                    table 
+                        tr
+                            td Username 
+                            td 
+                                input(type="text" name="username")
+                        tr 
+                            td Password 
+                            td 
+                                input(type="password" name="password")
+                        tr 
+                            td=errMssg
+                            td
+                                input(type="submit" value="Login")
+            include infodivs.pug

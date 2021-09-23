@@ -8,6 +8,7 @@ import './passport-auth';
 import path from 'path';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import fs from 'fs';
 
 declare module 'express-session' {
     export interface SessionData {
@@ -60,34 +61,93 @@ app.use((req: Request, resp: Response, next: NextFunction) => {
 });
 
 app.get('/', (req: Request, resp: Response) => {
-    let views;
+    let views: string;
+    let dbfiles: string[];
     if (req.session?.views) {
-        views = 'You viewed this page ' + req.session.views['/'] + ' times.';
+        views =
+            'You viewed this page ' +
+            req.session.views[req.originalUrl] +
+            ' times.';
     }
-    console.log(req.session);
-    console.log(req.session.id);
-    console.log(req?.user);
-    resp.render('index', {
-        title: 'Homepage',
-        message: 'Welcome!',
-        nofviews: views
-    });
+    const info = req.session;
+    const id = req.session.id;
+    fs.readdir(
+        path.join(__dirname, '/../../', 'sessions'),
+        (err: any, data: string[]) => {
+            if (err) {
+                console.log(err);
+            }
+            dbfiles = data.slice();
+            resp.render('index', {
+                message: 'Welcome!',
+                nofviews: views,
+                sessioninfo: info,
+                sessionid: id,
+                files: dbfiles
+            });
+        }
+    );
 });
 app.get('/account', (req: Request, resp: Response) => {
     if (req.isAuthenticated()) {
-        resp.render('account', {
-            user: req.user.id,
-            username: req.user.username,
-            nickname: req.user.nickname
-        });
+        let views: string;
+        let dbfiles: string[];
+        if (req.session?.views) {
+            views =
+                'You viewed this page ' +
+                req.session.views[req.originalUrl] +
+                ' times.';
+        }
+        const info = req.session;
+        const id = req.session.id;
+        fs.readdir(
+            path.join(__dirname, '/../../', 'sessions'),
+            (err: any, data: string[]) => {
+                if (err) {
+                    console.log(err);
+                }
+                dbfiles = data.slice();
+                resp.render('account', {
+                    nofviews: views,
+                    sessioninfo: info,
+                    sessionid: id,
+                    files: dbfiles,
+                    user: req.user.id,
+                    username: req.user.username,
+                    nickname: req.user.nickname
+                });
+            }
+        );
     } else {
         resp.redirect('/login');
     }
 });
 app.get('/login', (req: Request, resp: Response) => {
-    console.log(req.session);
-    console.log(req.session.id);
-    resp.render('login');
+    let views: string;
+    let dbfiles: string[];
+    if (req.session?.views) {
+        views =
+            'You viewed this page ' +
+            req.session.views[req.originalUrl] +
+            ' times.';
+    }
+    const info = req.session;
+    const id = req.session.id;
+    fs.readdir(
+        path.join(__dirname, '/../../', 'sessions'),
+        (err: any, data: string[]) => {
+            if (err) {
+                console.log(err);
+            }
+            dbfiles = data.slice();
+            resp.render('login', {
+                nofviews: views,
+                sessioninfo: info,
+                sessionid: id,
+                files: dbfiles
+            });
+        }
+    );
 });
 
 app.post('/login', (req: Request, resp: Response, next: NextFunction) => {
@@ -123,5 +183,5 @@ app.post('/logout', (req: Request, resp: Response, next: NextFunction) => {
 });
 
 app.listen(4000, () => {
-    console.log('live');
+    console.log('Live on port 4000.');
 });
