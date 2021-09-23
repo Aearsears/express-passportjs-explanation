@@ -9,7 +9,8 @@
         "dev": "npm run comp & nodemon -e js,pug --ignore sessions/*.json --watch views built/src/index.js",
         "lint": "npx eslint . --ext .ts,.js",
         "postinstall": "tsc",
-        "start": "node built/src/index.js"
+        "start": "node built/src/index.js",
+        "push": "git push origin main & git push heroku main"
     },
     "repository": {
         "type": "git",
