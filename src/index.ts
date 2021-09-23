@@ -10,6 +10,8 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 
+const port = process.env.PORT || 4000;
+
 declare module 'express-session' {
     export interface SessionData {
         views: { [key: string]: any };
@@ -182,6 +184,6 @@ app.post('/logout', (req: Request, resp: Response, next: NextFunction) => {
     });
 });
 
-app.listen(4000, () => {
+app.listen(port, () => {
     console.log('Live on port 4000.');
 });

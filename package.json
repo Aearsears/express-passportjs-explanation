@@ -8,7 +8,7 @@
         "comp": "npx tsc",
         "dev": "npm run comp & nodemon -e js,pug --ignore sessions/*.json --watch views built/src/index.js",
         "lint": "npx eslint . --ext .ts,.js",
-        "run": "npm run comp & node built/src/index.js"
+        "start": "npm run comp & node built/src/index.js"
     },
     "repository": {
         "type": "git",
